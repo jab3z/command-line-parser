@@ -1,15 +1,25 @@
 import argparse, sys, os
+import string
+from itertools import chain
+
+
+def clean_words(readlines):
+	cleaned = []
+	for line in readlines:
+		for word in line.split():
+			cleaned.append((word.strip(string.punctuation) + ' '))
+	return cleaned
+
 
 class ParserResult:
 	"""docstring for ClassName"""
 	
 
-	def __init__(self, input_file, filename=None):
-		self.filename = filename
-		self._input_file = input_file 
+	def __init__(self, input_file):
+		self._input_file = input_file
 
 
-	def output_file(self):
+	def output_file(self, filename):
 		'''
 			str, list -> None
 			
@@ -18,11 +28,11 @@ class ParserResult:
 
 		'''
 
-		if os.path.exists(self.filename):
+		if os.path.exists(filename):
 			sys.stdout.write('The file already exists, cannot be created!\n')
 			return
 		else:
-			_output_file = file('{}'.format(self.filename), 'wt')
+			_output_file = file('{}'.format(filename), 'wt')
 			[_output_file.write(i) for i in self.sort_file()]
 			_output_file.close()
 
@@ -33,8 +43,11 @@ class ParserResult:
 
 			Read the input file in a list and return the sorted version of it.
 		'''
-		with self._input_file as f:
-			return sorted([line for line in f])
+		try:		
+			return sorted(clean_words(self._input_file), key=lambda s:s.lower())		
+		except AttributeError:
+			with self._input_file as f:
+				return sorted(clean_words(f.readlines()), key=lambda s: s.lower())
 
 
 def main():
@@ -62,7 +75,13 @@ def main():
 		output_file(args.output, sorted_file_)
 
 	else:
-		[sys.stdout.write(item) for item in results.sort_file()]
+		output = chain(results.sort_file())
+		try:
+			while True:
+				sys.stdout.write(output.next())
+		except StopIteration:
+			sys.stdout.write('\n')
 
 if __name__ == '__main__':
 	main()
+
