@@ -29,7 +29,7 @@ class ParserResult:
 		self._input_file = input_file
 
 
-	def output_file(self, filename):
+	def output_file(self, filename, input_file):
 		'''
 			str, list -> None
 			
@@ -40,10 +40,10 @@ class ParserResult:
 
 		if os.path.exists(filename):
 			sys.stdout.write('The file already exists, cannot be created!\n')
-			return
+			sys.exit()
 		else:
 			_output_file = file('{}'.format(filename), 'wt')
-			[_output_file.write(i) for i in self.sort_file()]
+			[_output_file.write(i) for i in input_file]
 			_output_file.close()
 
 
@@ -93,12 +93,14 @@ def main():
 	if args.reversed:
 		if args.output:
 			results.filename = args.output
-			results.output_file()
+			results.output_file(results.filename, reversed(results.sort_file()))
+			sys.stdout.write('%s is now reversed.\n' % results.filename)
+		
 		else:
 			[sys.stdout.write(item) for item in reversed(results.sort_file())]
 
 	elif args.output:
-		output_file(args.output, sorted_file_)
+		results.output_file(args.output, results.sort_file())
 
 	else:
 		output = chain(results.sort_file())
