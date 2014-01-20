@@ -1,9 +1,19 @@
-import argparse, sys, os
+import argparse
+import os
 import string
+import sys
+
 from itertools import chain
 
 
 def clean_words(readlines):
+	'''
+		list -> list of str
+		
+		Remove the punctuation from input list: readlines.
+		
+	'''
+
 	cleaned = []
 	for line in readlines:
 		for word in line.split():
@@ -44,23 +54,39 @@ class ParserResult:
 			Read the input file in a list and return the sorted version of it.
 		'''
 		try:		
-			return sorted(clean_words(self._input_file), key=lambda s:s.lower())		
+			#  added method for testcase, when a file-like object it's used instead
+			#  of a real file.
+			return sorted(clean_words(self._input_file),
+							key=lambda s:s.lower())		
 		except AttributeError:
 			with self._input_file as f:
-				return sorted(clean_words(f.readlines()), key=lambda s: s.lower())
+				return sorted(clean_words(f.readlines()),
+								key=lambda s: s.lower())
+
+
+	def sort_lines(self):
+		pass
+
+
+	def sort_lines_and_words(self):
+		pass
 
 
 def main():
 
 	parser = argparse.ArgumentParser(description='''Takes in
 									as an argument the name of a file.''')
+
 	parser.add_argument('sort', type=argparse.FileType('r'),
 						help='''Output the lines from file 
 						in sorted alphabetical order.''')
+
 	parser.add_argument('-r', '--reversed', action='store_true', help='''Output the
 						lines in reversed order.''')
+
 	parser.add_argument('-o', '--output', type=str, help='''Output
 						the result in a new file''')
+
 	args = parser.parse_args()
 	results = ParserResult(args.sort)
 
@@ -81,6 +107,7 @@ def main():
 				sys.stdout.write(output.next())
 		except StopIteration:
 			sys.stdout.write('\n')
+
 
 if __name__ == '__main__':
 	main()
