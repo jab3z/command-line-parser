@@ -92,9 +92,8 @@ def main():
 
 	if args.reversed:
 		if args.output:
-			results.filename = args.output
-			results.output_file(results.filename, reversed(results.sort_file()))
-			sys.stdout.write('%s is now reversed.\n' % results.filename)
+			results.output_file(args.output, reversed(results.sort_file()))
+			sys.stdout.write('%s is now reversed.\n' % args.output)
 		
 		else:
 			[sys.stdout.write(item) for item in reversed(results.sort_file())]
